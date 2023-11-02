@@ -4,51 +4,72 @@ use plotlib::repr::Plot;
 use plotlib::view::ContinuousView;
 use plotlib::style::LineStyle;
 
-
 const GRAVITY:f32 = -9.805;
 const MASS:f32 = 6.0;
 const RADIUS:f32 = 0.011;
 const DT:f32 = 0.001;
 
+struct graph_properties {
 
+    plot_points:Vec<(f64, f64)>,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+    x_axis_name: String,
+    y_axis_name: String
+
+
+}
 
 
 fn main() {
     let output = compute_data(); //[t, h, v, a, drag]
-   // let height_time = parse_data_for_x(2,&output);
-    //plot(height_time);
 
-    let time = split_vec(0,&output);
-    let height = split_vec(1,&output);
-    let velocity = split_vec(2,&output);
-    let acceleration = split_vec(3,&output);
-    let drag = split_vec(4,&output);
+    let time = get_colunm(0,&output);
+    let height = get_colunm(1,&output);
+    let velocity = get_colunm(2,&output);
+    let acceleration = get_colunm(3,&output);
+    let drag = get_colunm(4,&output);
+   /* let graph_height_time = graph_properties{
+        plot_points:,
+        x_min: f64,
+        x_max: f64,
+        y_min: f64,
+        y_max: f64,
+        x_axis_name: String,
+        y_axis_name: String
 
-    println!("{:?}",get_bounds())
+
+    }
+    */
+
+
+
+
 
 }
 
-fn plot (data: Vec<(f64, f64)>,x_axis_name: String, y_axis_name: String,x_bounds:(f64,f64),y_bounds:(f64,f64)) {
+impl graph_properties {
+    fn plot (data: Vec<(f64, f64)>,x_axis_name: String, y_axis_name: String,x_bounds:(f64,f64),y_bounds:(f64,f64)) {
+        // We create our scatter plot from the data
+        let s1: Plot = Plot::new(data).line_style(
+            LineStyle::new()
+                .colour("#DD3355"),
+        ); // and a custom colour
 
+        // The 'view' describes what set of data is drawn
+        let v = ContinuousView::new()
+            .add(s1)
 
-    // We create our scatter plot from the data
-    let s1: Plot = Plot::new(data).line_style(
-        LineStyle::new()
-            .colour("#DD3355"),
-    ); // and a custom colour
+            .x_range(0., 50.)
+            .y_range(0., 25.)
+            .x_label(x_axis_name)
+            .y_label(y_axis_name);
 
-    // The 'view' describes what set of data is drawn
-    let v = ContinuousView::new()
-        .add(s1)
-
-        .x_range(0., 50.)
-        .y_range(0., 25.)
-        .x_label(x_axis_name)
-        .y_label(y_axis_name);
-
-    // A page with a single view is then saved to an SVG file
-    Page::single(&v).save("scatter.svg").unwrap();
-
+        // A page with a single view is then saved to an SVG file
+        Page::single(&v).save("scatter.svg").unwrap();
+    }
 }
 
 fn get_bounds (input: Vec<(f64)>)-> (f64,f64) {
@@ -61,7 +82,19 @@ fn get_bounds (input: Vec<(f64)>)-> (f64,f64) {
 }
 
 
-fn split_vec (i: usize, input: &Vec<[f32;5]>) -> Vec<(f64)> {
+fn parse_for_graph (i: usize, input: &Vec<f32>) -> Vec<(f64,f64)> {
+
+    let mut return_vector = vec![];
+    for row in input{
+        let temp = (row[0].into(),row[i].into());
+        return_vector.push(temp);
+    }
+
+    return return_vector ;
+}
+
+
+fn get_colunm (i: usize, input: &Vec<f32>) -> Vec<(f64)> {
 
     let mut return_vector = vec![];
     for row in input{
