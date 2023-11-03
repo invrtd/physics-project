@@ -16,6 +16,7 @@ struct GraphProperties {
 fn main() {
     let(time_height, height_data,velocity_data,acceleration_data,drag_data) = compute_data();
     // time height is only fuctional one currently
+    // rest bork
 
 
     let test = GraphProperties {
