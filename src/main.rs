@@ -15,20 +15,11 @@ struct GraphProperties {
 }
 fn main() {
     let(time_height, height_data,velocity_data,acceleration_data,drag_data) = compute_data();
+    // time height is only fuctional one currently
 
-    let SOME_POINT= vec![(1.0, 2.0),
-                                 (3.0, 4.0),
-                                 (5.0, 6.0),
-                                 (7.0, 8.0),
-                                 (9.0, 10.0),
-                                 (11.0, 12.0),
-                                 (13.0, 14.0),
-                                 (15.0, 16.0),
-                                 (17.0, 18.0),
-                                 (19.0, 20.0),];//get data look like that
 
     let test = GraphProperties {
-        plot_points: (SOME_POINT),
+        plot_points: (time_height),
         x_axis_name: "it works?".parse().unwrap(),
         y_axis_name: "it works?".parse().unwrap()
     };
@@ -57,8 +48,8 @@ impl GraphProperties {
         let v = ContinuousView::new()
             .add(s1)
 
-            .x_range(0., 50.)
-            .y_range(0., 25.)
+            .x_range(0., 25.)
+            .y_range(0., 60.0)
             .x_label(&self.x_axis_name)
             .y_label(&self.y_axis_name);
 
@@ -85,14 +76,14 @@ fn graph_range (input: Vec<f64>) -> (f64,f64){
     }
     return     (min,max);
 }
-fn compute_data() -> (Vec<f64>,Vec<f64>,Vec<f64>,Vec<f64>,Vec<f64>) {
+fn compute_data() -> (Vec<(f64, f64)>,Vec<f64>,Vec<f64>,Vec<f64>,Vec<f64>) {
     let mut h: f64 = 440.0;
     let viscosity: f64 = 14.8;
     let mut v: f64 = 0.0;
     let mut t: f64 = 0.0;
     let mut a: f64 = 0.0;
     let mut drag: f64 = 0.0;
-    let mut time_data = vec![t];
+    let mut time_height = vec![(t,v)];
     let mut height_data = vec![h];
     let mut velocity_data = vec![v];
     let mut acceleration_data = vec![a];
@@ -106,15 +97,15 @@ fn compute_data() -> (Vec<f64>,Vec<f64>,Vec<f64>,Vec<f64>,Vec<f64>) {
         v = update_v(v, a);
         h = update_h(h, v);
         t = step_time(t);
-        time_data.extend([t,h]);
-        height_data.extend([h]);
-        velocity_data.extend([v]);
-        acceleration_data.extend([a]);
-        drag_data.extend([drag]);
-        
+        time_height.push((t,drag.abs()));
+        /*height_data.push([h]);
+        velocity_data.push([v]);
+        acceleration_data.push([a]);
+        drag_data.push([drag]);
+        */
     }
 
-    return (time_data,height_data,velocity_data,acceleration_data,drag_data);
+    return (time_height,height_data,velocity_data,acceleration_data,drag_data);
 }
 fn step_time (t :f64) -> f64{
 
